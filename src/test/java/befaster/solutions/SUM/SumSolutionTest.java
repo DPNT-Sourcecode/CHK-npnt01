@@ -11,7 +11,6 @@ public class SumSolutionTest {
 
     @Before
     public void setUp() {
-
         sum = new SumSolution();
     }
 
