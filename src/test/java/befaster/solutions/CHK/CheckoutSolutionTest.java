@@ -43,4 +43,13 @@ public class CheckoutSolutionTest {
         assertThat(checkoutSolution.checkout("AxA"), equalTo(-1));
     }
 
+    @Test
+    public void checkFreeItemScenario1() { assertThat(checkoutSolution.checkout("AAAAABBEE"), equalTo(310)); }
+
+    @Test
+    public void checkFreeItemScenario2() { assertThat(checkoutSolution.checkout("AAAAABBEEE"), equalTo(350)); }
+
+    @Test
+    public void checkFreeItemScenario3() { assertThat(checkoutSolution.checkout("AAAAABBEEEE"), equalTo(360)); }
+
 }
