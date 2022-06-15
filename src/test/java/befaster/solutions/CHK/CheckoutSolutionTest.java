@@ -24,7 +24,23 @@ public class CheckoutSolutionTest {
     }
 
     @Test
-    public void checkInvalidScenario() {
+    public void checkValidScenario3() {
+        assertThat(checkoutSolution.checkout("AAABBCD"), equalTo(210));
+    }
+
+    @Test
+    public void checkInvalidScenario1() {
         assertThat(checkoutSolution.checkout("FFFFGH"), equalTo(-1));
     }
+
+    @Test
+    public void checkInvalidScenario2() {
+        assertThat(checkoutSolution.checkout(""), equalTo(0));
+    }
+
+    @Test
+    public void checkInvalidScenario3() {
+        assertThat(checkoutSolution.checkout("AxA"), equalTo(-1));
+    }
+
 }
