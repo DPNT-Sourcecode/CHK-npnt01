@@ -11,9 +11,10 @@ public class CheckoutSolution {
     static Map<String, Integer> itemRegularPrices = new HashMap<>();
     static Map<String, Integer> itemSpecialPrices = new HashMap<>();
     static Map<String, String> itemsFreeList = new HashMap<>();
-
+    static int splSum;
     static Map<String, Long> items = null;
     static {
+        splSum = 0;
         itemRegularPrices.put("A", 50);
         itemRegularPrices.put("B", 30);
         itemRegularPrices.put("C", 20);
@@ -38,18 +39,26 @@ public class CheckoutSolution {
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
-    public Integer getSpecialPrices(String product, int totalPurchased) {
-        int splSum = 0;
-        for(int i=totalPurchased; i >= 1; i--){
+    public int getSpecialPrices(String product, int totalPurchased) {
+        int i = totalPurchased;
+        if(i >= 1){
             int specialPrice = itemSpecialPrices.containsKey(i + "-" + product)? itemSpecialPrices.get(i + "-" + product) : 0;
             if(specialPrice > 0) {
-                int totalGroupCount = totalPurchased/i;
+                int availableItems = Math.toIntExact(items.get(product));
+                int totalGroupCount = availableItems/i;
                 splSum += totalGroupCount * specialPrice;
 
-                int balanceItemsCount = totalPurchased%i;
+                int balanceItemsCount = Math.toIntExact(availableItems%i);
                 items.put(product, Long.valueOf(balanceItemsCount));
-                break;
+                if(balanceItemsCount > 1) {
+                    i = balanceItemsCount;
+                } else {
+                    return splSum;
+                }
+            } else {
+                --i;
             }
+            if(i > 1) getSpecialPrices(product, i);
         }
         return splSum;
     }
@@ -78,6 +87,7 @@ public class CheckoutSolution {
         // Invoke the special prices
         for(Map.Entry<String, Long> entry : items.entrySet()) {
             sum += getSpecialPrices(entry.getKey(), Math.toIntExact(entry.getValue()));
+            splSum = 0;
         }
         // Invoke the regular prices
         for(Map.Entry<String, Long> entry : items.entrySet()) {

@@ -39,6 +39,11 @@ public class CheckoutSolutionTest {
     }
 
     @Test
+    public void checkInvalidScenario2A() {
+        assertThat(checkoutSolution.checkout(" "), equalTo(0));
+    }
+
+    @Test
     public void checkInvalidScenario3() {
         assertThat(checkoutSolution.checkout("AxA"), equalTo(-1));
     }
@@ -51,5 +56,19 @@ public class CheckoutSolutionTest {
 
     @Test
     public void checkFreeItemScenario3() { assertThat(checkoutSolution.checkout("AAAAABBEEEE"), equalTo(360)); }
+
+    @Test
+    public void discountScenario1() { assertThat(checkoutSolution.checkout("EEAAAAABBCDEE"), equalTo(395));}
+
+    @Test
+    public void discountScenario2() { assertThat(checkoutSolution.checkout("EEAAAAABBCDEEAAA"), equalTo(525));}
+
+    @Test
+    public void discountScenario3() { assertThat(checkoutSolution.checkout("AAAAABBCDEE"), equalTo(345));}
+
+
+    @Test
+    public void discountScenario4() { assertThat(checkoutSolution.checkout("AAAAABBEEEE"), equalTo(360));}
+
 
 }
