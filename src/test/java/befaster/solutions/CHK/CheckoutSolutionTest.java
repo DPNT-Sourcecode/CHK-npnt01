@@ -70,5 +70,14 @@ public class CheckoutSolutionTest {
     @Test
     public void discountScenario4() { assertThat(checkoutSolution.checkout("AAAAABBEEEE"), equalTo(360));}
 
+    @Test
+    public void additionalDiscountScenario1(){assertThat(checkoutSolution.checkout("FF"), equalTo(10));}
+
+    @Test
+    public void additionalDiscountScenario2(){assertThat(checkoutSolution.checkout("FFF"), equalTo(20));}
+
+    @Test
+    public void additionalDiscountInvalidScenario3(){assertThat(checkoutSolution.checkout("FFFx"), equalTo(-1));}
 
 }
+
