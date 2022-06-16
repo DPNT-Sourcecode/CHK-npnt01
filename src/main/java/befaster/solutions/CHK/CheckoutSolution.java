@@ -20,12 +20,14 @@ public class CheckoutSolution {
         itemRegularPrices.put("C", 20);
         itemRegularPrices.put("D", 15);
         itemRegularPrices.put("E", 40);
+        itemRegularPrices.put("F", 10);
 
         itemSpecialPrices.put("5-A", 200);
         itemSpecialPrices.put("3-A", 130);
         itemSpecialPrices.put("2-B", 45);
 
         itemsFreeList.put("2-E", "B");
+        itemsFreeList.put("2-F", "F");
     }
 
     public boolean isInValidItemsExists(String skus){
@@ -101,3 +103,4 @@ public class CheckoutSolution {
     }
 
 }
+
