@@ -21,13 +21,43 @@ public class CheckoutSolution {
         itemRegularPrices.put("D", 15);
         itemRegularPrices.put("E", 40);
         itemRegularPrices.put("F", 10);
+        itemRegularPrices.put("G", 20);
+        itemRegularPrices.put("H", 10);
+        itemRegularPrices.put("I", 35);
+        itemRegularPrices.put("J", 60);
+        itemRegularPrices.put("K", 80);
+        itemRegularPrices.put("L", 90);
+        itemRegularPrices.put("M", 15);
+        itemRegularPrices.put("N", 40);
+        itemRegularPrices.put("O", 10);
+        itemRegularPrices.put("P", 50);
+        itemRegularPrices.put("Q", 30);
+        itemRegularPrices.put("R", 50);
+        itemRegularPrices.put("S", 30);
+        itemRegularPrices.put("T", 20);
+        itemRegularPrices.put("U", 40);
+        itemRegularPrices.put("V", 50);
+        itemRegularPrices.put("W", 20);
+        itemRegularPrices.put("X", 90);
+        itemRegularPrices.put("Y", 10);
+        itemRegularPrices.put("Z", 50);
 
         itemSpecialPrices.put("5-A", 200);
         itemSpecialPrices.put("3-A", 130);
         itemSpecialPrices.put("2-B", 45);
+        itemSpecialPrices.put("10-H", 80);
+        itemSpecialPrices.put("5-H", 45);
+        itemSpecialPrices.put("2-K", 150);
+        itemSpecialPrices.put("5-P", 200);
+        itemSpecialPrices.put("3-Q", 80);
+        itemSpecialPrices.put("3-V", 130);
+        itemSpecialPrices.put("2-V", 90);
 
         itemsFreeList.put("2-E", "1-B");
         itemsFreeList.put("2-F", "1-F");
+        itemsFreeList.put("3-N", "1-M");
+        itemsFreeList.put("3-R", "1-Q");
+        itemsFreeList.put("3-U", "1-U");
     }
 
     public boolean isInValidItemsExists(String skus) {
@@ -113,3 +143,4 @@ public class CheckoutSolution {
         return sumValue;
     }
 }
+
