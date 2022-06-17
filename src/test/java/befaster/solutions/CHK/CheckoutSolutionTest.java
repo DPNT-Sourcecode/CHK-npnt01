@@ -30,7 +30,7 @@ public class CheckoutSolutionTest {
 
     @Test
     public void checkInvalidScenario1() {
-        assertThat(checkoutSolution.checkout("FFFFGH"), equalTo(-1));
+        assertThat(checkoutSolution.checkout("FFFFxGH"), equalTo(-1));
     }
 
     @Test
@@ -88,5 +88,6 @@ public class CheckoutSolutionTest {
     public void additionalDiscountScenario5(){assertThat(checkoutSolution.checkout("FFFFFFF"), equalTo(50));}
 
 }
+
 
 
