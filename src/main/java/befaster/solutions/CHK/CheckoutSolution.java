@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 
 public class CheckoutSolution {
-
     static Map<String, Integer> itemRegularPrices = new HashMap<>();
     static Map<String, Integer> itemSpecialPrices = new HashMap<>();
     static Map<String, String> itemsFreeList = new HashMap<>();
     static int splSum;
     static Map<String, Long> items = null;
+
     static {
         splSum = 0;
         itemRegularPrices.put("A", 50);
@@ -26,13 +26,13 @@ public class CheckoutSolution {
         itemSpecialPrices.put("3-A", 130);
         itemSpecialPrices.put("2-B", 45);
 
-        itemsFreeList.put("2-E", "B");
-        itemsFreeList.put("2-F", "F");
+        itemsFreeList.put("2-E", "1-B");
+        itemsFreeList.put("2-F", "1-F");
     }
 
-    public boolean isInValidItemsExists(String skus){
+    public boolean isInValidItemsExists(String skus) {
         long count = stream(skus.split("")).filter(a -> !itemRegularPrices.containsKey(a)).count();
-        if(count > 0) return true;
+        if (count > 0) return true;
         return false;
     }
 
@@ -41,18 +41,39 @@ public class CheckoutSolution {
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
+    public void evaluateFreeItems(String promotionItem, String freeItem) {
+        Integer itemPromoCount = Integer.valueOf(promotionItem.split("-")[0]);
+        String itemPromoCode = promotionItem.split("-")[1];
+
+        Integer freeItemCount = Integer.valueOf(freeItem.split("-")[0]);
+        String freeItemCode = freeItem.split("-")[1];
+
+        long purchasedCount = items.containsKey(itemPromoCode) ? items.get(itemPromoCode) : 0;
+
+        if (!itemPromoCode.equals(freeItemCode) && purchasedCount >= itemPromoCount) {
+            int eligibleFreeItemCount = Math.toIntExact(purchasedCount / itemPromoCount);
+            if (items.containsKey(freeItemCode)) items.put(freeItemCode, items.get(freeItemCode) - eligibleFreeItemCount);
+        } else if (itemPromoCode.equals(freeItemCode)) {
+            if (purchasedCount == itemPromoCount) return;
+            if(items.containsKey(itemPromoCode)){
+                int totalCnt = itemPromoCount + freeItemCount;
+                items.put(itemPromoCode, (long) (purchasedCount - purchasedCount/totalCnt));
+            }
+        }
+    }
+
     public int getSpecialPrices(String product, int totalPurchased) {
         int i = totalPurchased;
-        if(i >= 1){
-            int specialPrice = itemSpecialPrices.containsKey(i + "-" + product)? itemSpecialPrices.get(i + "-" + product) : 0;
-            if(specialPrice > 0) {
+        if (i >= 1) {
+            int specialPrice = itemSpecialPrices.containsKey(i + "-" + product) ? itemSpecialPrices.get(i + "-" + product) : 0;
+            if (specialPrice > 0) {
                 int availableItems = Math.toIntExact(items.get(product));
-                int totalGroupCount = availableItems/i;
+                int totalGroupCount = availableItems / i;
                 splSum += totalGroupCount * specialPrice;
 
-                int balanceItemsCount = Math.toIntExact(availableItems%i);
+                int balanceItemsCount = Math.toIntExact(availableItems % i);
                 items.put(product, Long.valueOf(balanceItemsCount));
-                if(balanceItemsCount > 1) {
+                if (balanceItemsCount > 1) {
                     i = balanceItemsCount;
                 } else {
                     return splSum;
@@ -60,19 +81,9 @@ public class CheckoutSolution {
             } else {
                 --i;
             }
-            if(i > 1) getSpecialPrices(product, i);
+            if (i > 1) getSpecialPrices(product, i);
         }
         return splSum;
-    }
-
-    public void evaluateFreeItems(String promotionItem, String freeItem) {
-        String itemPromoCode = promotionItem.split("-")[1];
-        Integer itemPromoCount = Integer.valueOf(promotionItem.split("-")[0]);
-        long purchasedCount = items.containsKey(itemPromoCode) ? items.get(itemPromoCode) : 0;
-        if (purchasedCount >= itemPromoCount) {
-            int freeItemCount = Math.toIntExact(purchasedCount / itemPromoCount);
-            if(items.containsKey(freeItem)) items.put(freeItem, items.get(freeItem) - freeItemCount);
-        }
     }
 
     public Integer checkout(String skus) {
@@ -101,6 +112,4 @@ public class CheckoutSolution {
         int sumValue = (sum > 0)? Long.valueOf(sum).intValue() : -1;
         return sumValue;
     }
-
 }
-
