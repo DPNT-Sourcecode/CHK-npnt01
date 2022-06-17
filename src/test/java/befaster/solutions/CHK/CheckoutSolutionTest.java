@@ -99,7 +99,11 @@ public class CheckoutSolutionTest {
     @Test
     public void additionalScenario4(){assertThat(checkoutSolution.checkout("VVVUUU"), equalTo(250));}
 
+    @Test
+    public void additionalScenario5(){assertThat(checkoutSolution.checkout("MMNNNPPPQQQRRRQQ"), equalTo(545));}
+
 }
+
 
 
 
