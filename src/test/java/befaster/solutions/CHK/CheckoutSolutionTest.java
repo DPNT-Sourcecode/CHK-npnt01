@@ -106,12 +106,13 @@ public class CheckoutSolutionTest {
     public void groupDiscountScenario1(){assertThat(checkoutSolution.checkout("MMMNNNSTX"), equalTo(195));}
 
     @Test
-    public void groupDiscountScenario2(){assertThat(checkoutSolution.checkout("MMMNNNSTXSTX"), equalTo(195));} // +57
+    public void groupDiscountScenario2(){assertThat(checkoutSolution.checkout("MMMNNNSTXSTX"), equalTo(252));}
 
     @Test
-    public void groupDiscountScenario3(){assertThat(checkoutSolution.checkout("MMMNNNSTXAAA"), equalTo(195));} // +
+    public void groupDiscountScenario3(){assertThat(checkoutSolution.checkout("MMMNNNSTXAAA"), equalTo(325));}
 
 }
+
 
 
 
