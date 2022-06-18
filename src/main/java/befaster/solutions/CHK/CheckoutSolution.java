@@ -167,7 +167,3 @@ public class CheckoutSolution {
         return (sum > 0)? sum : -1;
     }
 }
-
-
-
-
