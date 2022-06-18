@@ -142,7 +142,7 @@ public class CheckoutSolution {
         if(isInValidItemsExists(skus)) return -1;
 
         items = getItems(skus);
-        long sum = 0;
+        int sum = 0;
 
         // #1: Group Discount offer Calculation
         for(Map.Entry<String, Integer> entry : itemGroupDiscountList.entrySet()) {
@@ -164,9 +164,10 @@ public class CheckoutSolution {
                 sum += entry.getValue() * itemRegularPrice.intValue();
             }
         }
-        return (sum > 0)? Long.valueOf(sum).intValue() : -1;
+        return (sum > 0)? sum : -1;
     }
 }
+
 
 
 
