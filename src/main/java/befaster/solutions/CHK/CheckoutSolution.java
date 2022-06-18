@@ -8,14 +8,17 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 
 public class CheckoutSolution {
+
     static Map<String, Integer> itemRegularPrices = new HashMap<>();
     static Map<String, Integer> itemSpecialPrices = new HashMap<>();
     static Map<String, String> itemsFreeList = new HashMap<>();
     static Map<String, Integer> itemGroupDiscountList = new HashMap<>();
-    static int splSum;
-    static Map<String, Integer> items = null;
 
-    static{
+    static int splSum;
+    static Map<String, Long> items = null;
+
+    static {
+        splSum = 0;
         itemRegularPrices.put("A", 50);
         itemRegularPrices.put("B", 30);
         itemRegularPrices.put("C", 20);
@@ -65,8 +68,7 @@ public class CheckoutSolution {
 
     public boolean isInValidItemsExists(String skus) {
         long count = stream(skus.split("")).filter(a -> !itemRegularPrices.containsKey(a)).count();
-        if (count > 0) return true;
-        return false;
+        return count > 0;
     }
 
     public Map<String, Long> getItems(String skus) {
@@ -83,18 +85,18 @@ public class CheckoutSolution {
                 return;
             }
             if(items.containsKey(sItem)){
-                int existingCount = items.get(sItem);
-                items.put(sItem, existingCount - 1));
+                long existingCount = Math.toIntExact(items.get(sItem));
+                items.put(sItem, existingCount - 1);
                 count++;
             }
         }
     }
 
     public void evaluateFreeItems(String promotionItem, String freeItem) {
-        Integer itemPromoCount = Integer.valueOf(promotionItem.split("-")[0]);
+        int itemPromoCount = Integer.parseInt(promotionItem.split("-")[0]);
         String itemPromoCode = promotionItem.split("-")[1];
 
-        Integer freeItemCount = Integer.valueOf(freeItem.split("-")[0]);
+        int freeItemCount = Integer.parseInt(freeItem.split("-")[0]);
         String freeItemCode = freeItem.split("-")[1];
 
         long purchasedCount = items.containsKey(itemPromoCode) ? items.get(itemPromoCode) : 0;
@@ -106,7 +108,7 @@ public class CheckoutSolution {
             if (purchasedCount == itemPromoCount) return;
             if(items.containsKey(itemPromoCode)){
                 int totalCnt = itemPromoCount + freeItemCount;
-                items.put(itemPromoCode, (long) (purchasedCount - purchasedCount/totalCnt));
+                items.put(itemPromoCode, (purchasedCount - (purchasedCount/totalCnt)));
             }
         }
     }
@@ -114,14 +116,14 @@ public class CheckoutSolution {
     public int getSpecialPrices(String product, int totalPurchased) {
         int i = totalPurchased;
         if (i >= 1) {
-            int specialPrice = itemSpecialPrices.containsKey(i + "-" + product) ? itemSpecialPrices.get(i + "-" + product) : 0;
+            int specialPrice = itemSpecialPrices.getOrDefault(i + "-" + product, 0);
             if (specialPrice > 0) {
                 int availableItems = Math.toIntExact(items.get(product));
                 int totalGroupCount = availableItems / i;
                 splSum += totalGroupCount * specialPrice;
 
                 int balanceItemsCount = Math.toIntExact(availableItems % i);
-                items.put(product, Long.valueOf(balanceItemsCount));
+                items.put(product, (long) balanceItemsCount);
                 if (balanceItemsCount > 1) {
                     i = balanceItemsCount;
                 } else {
@@ -142,25 +144,29 @@ public class CheckoutSolution {
         items = getItems(skus);
         long sum = 0;
 
-        // Invoke Free itesm
+        // #1: Group Discount offer Calculation
+        for(Map.Entry<String, Integer> entry : itemGroupDiscountList.entrySet()) {
+            evaluateDiscountedItems(entry.getKey(), entry.getValue());
+        }
+        // #2 : Calculate Free items
         for(Map.Entry<String, String> entry : itemsFreeList.entrySet()) {
             evaluateFreeItems(entry.getKey(), entry.getValue());
         }
-        // Invoke the special prices
+        // #3 : Invoke the special prices
         for(Map.Entry<String, Long> entry : items.entrySet()) {
             sum += getSpecialPrices(entry.getKey(), Math.toIntExact(entry.getValue()));
             splSum = 0;
         }
-        // Invoke the regular prices
+        // #4 : Invoke the regular prices
         for(Map.Entry<String, Long> entry : items.entrySet()) {
             Integer itemRegularPrice = itemRegularPrices.get(entry.getKey());
             if (itemRegularPrice != null) {
                 sum += entry.getValue() * itemRegularPrice.intValue();
             }
         }
-        int sumValue = (sum > 0)? Long.valueOf(sum).intValue() : -1;
-        return sumValue;
+        return (sum > 0)? Long.valueOf(sum).intValue() : -1;
     }
 }
+
 
 
