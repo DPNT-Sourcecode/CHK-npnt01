@@ -1,6 +1,7 @@
 package befaster.solutions.CHK;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -71,6 +72,22 @@ public class CheckoutSolution {
     public Map<String, Long> getItems(String skus) {
         return stream(skus.split(""))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    }
+
+    public void evaluateDiscountedItems(String discountedItem, Integer discountPrice) {
+        List<String> listItem = stream(discountedItem.split(",")).collect(Collectors.toList());
+        int count = 0;
+        for(String sItem : listItem) {
+            if(count == 3){
+                splSum += discountPrice;
+                return;
+            }
+            if(items.containsKey(sItem)){
+                int existingCount = items.get(sItem);
+                items.put(sItem, existingCount - 1));
+                count++;
+            }
+        }
     }
 
     public void evaluateFreeItems(String promotionItem, String freeItem) {
@@ -145,4 +162,5 @@ public class CheckoutSolution {
         return sumValue;
     }
 }
+
 
