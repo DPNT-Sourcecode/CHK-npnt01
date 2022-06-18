@@ -10,11 +10,11 @@ public class CheckoutSolution {
     static Map<String, Integer> itemRegularPrices = new HashMap<>();
     static Map<String, Integer> itemSpecialPrices = new HashMap<>();
     static Map<String, String> itemsFreeList = new HashMap<>();
+    static Map<String, Integer> itemGroupDiscountList = new HashMap<>();
     static int splSum;
-    static Map<String, Long> items = null;
+    static Map<String, Integer> items = null;
 
-    static {
-        splSum = 0;
+    static{
         itemRegularPrices.put("A", 50);
         itemRegularPrices.put("B", 30);
         itemRegularPrices.put("C", 20);
@@ -25,7 +25,7 @@ public class CheckoutSolution {
         itemRegularPrices.put("H", 10);
         itemRegularPrices.put("I", 35);
         itemRegularPrices.put("J", 60);
-        itemRegularPrices.put("K", 80);
+        itemRegularPrices.put("K", 70);
         itemRegularPrices.put("L", 90);
         itemRegularPrices.put("M", 15);
         itemRegularPrices.put("N", 40);
@@ -33,21 +33,21 @@ public class CheckoutSolution {
         itemRegularPrices.put("P", 50);
         itemRegularPrices.put("Q", 30);
         itemRegularPrices.put("R", 50);
-        itemRegularPrices.put("S", 30);
+        itemRegularPrices.put("S", 20);
         itemRegularPrices.put("T", 20);
         itemRegularPrices.put("U", 40);
         itemRegularPrices.put("V", 50);
         itemRegularPrices.put("W", 20);
-        itemRegularPrices.put("X", 90);
-        itemRegularPrices.put("Y", 10);
-        itemRegularPrices.put("Z", 50);
+        itemRegularPrices.put("X", 17);
+        itemRegularPrices.put("Y", 20);
+        itemRegularPrices.put("Z", 21);
 
         itemSpecialPrices.put("5-A", 200);
         itemSpecialPrices.put("3-A", 130);
         itemSpecialPrices.put("2-B", 45);
         itemSpecialPrices.put("10-H", 80);
         itemSpecialPrices.put("5-H", 45);
-        itemSpecialPrices.put("2-K", 150);
+        itemSpecialPrices.put("2-K", 120);
         itemSpecialPrices.put("5-P", 200);
         itemSpecialPrices.put("3-Q", 80);
         itemSpecialPrices.put("3-V", 130);
@@ -58,6 +58,8 @@ public class CheckoutSolution {
         itemsFreeList.put("3-N", "1-M");
         itemsFreeList.put("3-R", "1-Q");
         itemsFreeList.put("3-U", "1-U");
+
+        itemGroupDiscountList.put("S,T,X,Y,Z", 45);
     }
 
     public boolean isInValidItemsExists(String skus) {
@@ -143,3 +145,4 @@ public class CheckoutSolution {
         return sumValue;
     }
 }
+
