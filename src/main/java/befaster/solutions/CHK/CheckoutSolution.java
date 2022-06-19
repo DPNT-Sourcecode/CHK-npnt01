@@ -68,7 +68,6 @@ public class CheckoutSolution {
 
     public boolean isInValidItemsExists(String skus) {
         long count = stream(skus.split("")).filter(a -> !itemRegularPrices.containsKey(a)).count();
-        System.out.println("invalid item count:"+ count);
         if (count > 0) return true;
         return false;
     }
@@ -109,8 +108,6 @@ public class CheckoutSolution {
 
     public void evaluateDiscountedItems(String discountedItem, Integer discountPrice) {
         List<String> listItem = stream(discountedItem.split(",")).collect(Collectors.toList());
-        System.out.println("collect: "+ listItem);
-        System.out.println("before evaluateDiscountedItems: items detail: "+ items);
         calculateGroupDiscount(listItem, discountPrice);
     }
 
@@ -166,22 +163,21 @@ public class CheckoutSolution {
         items = getItems(skus);
         long sum = 0;
 
-        // Order-1: Discount offer
+        // Logic-1: Discount offer calculation
         for(Map.Entry<String, Integer> entry : itemGroupDiscountList.entrySet()) {
             evaluateDiscountedItems(entry.getKey(), entry.getValue());
         }
         System.out.println("Items After Discount Calc:"+ items);
-        // Order-2 : Invoke Free itesm
+        // Logic-2 : Invoke Free items list
         for(Map.Entry<String, String> entry : itemsFreeList.entrySet()) {
             evaluateFreeItems(entry.getKey(), entry.getValue());
         }
-        // Invoke the special prices
+        // Logic-3 : Invoke the special prices
         for(Map.Entry<String, Long> entry : items.entrySet()) {
             sum += getSpecialPrices(entry.getKey(), Math.toIntExact(entry.getValue()));
             splSum = 0;
         }
-
-        // Invoke the regular prices
+        // Logic-4 : Invoke the regular prices
         for(Map.Entry<String, Long> entry : items.entrySet()) {
             Integer itemRegularPrice = itemRegularPrices.get(entry.getKey());
             if (itemRegularPrice != null) {
@@ -193,4 +189,5 @@ public class CheckoutSolution {
     }
 
 }
+
 
