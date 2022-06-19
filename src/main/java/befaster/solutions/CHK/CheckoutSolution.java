@@ -1,5 +1,6 @@
 package befaster.solutions.CHK;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 
 public class CheckoutSolution {
-
     static Map<String, Integer> itemRegularPrices = new HashMap<>();
     static Map<String, Integer> itemSpecialPrices = new HashMap<>();
     static Map<String, String> itemsFreeList = new HashMap<>();
@@ -68,7 +68,9 @@ public class CheckoutSolution {
 
     public boolean isInValidItemsExists(String skus) {
         long count = stream(skus.split("")).filter(a -> !itemRegularPrices.containsKey(a)).count();
-        return count > 0;
+        System.out.println("invalid item count:"+ count);
+        if (count > 0) return true;
+        return false;
     }
 
     public Map<String, Long> getItems(String skus) {
@@ -76,20 +78,40 @@ public class CheckoutSolution {
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
-    public void evaluateDiscountedItems(String discountedItem, Integer discountPrice) {
-        List<String> listItem = stream(discountedItem.split(",")).collect(Collectors.toList());
-        int count = 0;
-        for(String sItem : listItem) {
-            if(count == 3){
-                splSum += discountPrice;
-                return;
-            }
-            if(items.containsKey(sItem)){
-                long existingCount = Math.toIntExact(items.get(sItem));
-                items.put(sItem, existingCount - 1);
-                count++;
+    public boolean isValidGroupExists(List<String> groupListItem){
+        int groupCount = Math.toIntExact(groupListItem.stream().map(a -> items.containsKey(a) && items.get(a) > 0).count());
+        return (groupCount >= 3);
+    }
+
+    public void updateList(List<String> selectedItem, int discountPrice){
+        for(String sItem: selectedItem) {
+            long existingCount = items.get(sItem);
+            items.put(sItem, existingCount - 1);
+        }
+        splSum += discountPrice;
+    }
+
+    public void calculateGroupDiscount(List<String> groupListItem, int discountPrice) {
+        int groupCount = 0;
+        List<String> selectedItem = new ArrayList<>();
+        if(!isValidGroupExists(groupListItem)) return;
+        for (String sItem : groupListItem) {
+            if (items.containsKey(sItem) && items.get(sItem) > 0) {
+                selectedItem.add(sItem);
+                groupCount++;
+                if (groupCount == 3) {
+                    updateList(selectedItem, discountPrice);
+                    calculateGroupDiscount(groupListItem, discountPrice);
+                }
             }
         }
+    }
+
+    public void evaluateDiscountedItems(String discountedItem, Integer discountPrice) {
+        List<String> listItem = stream(discountedItem.split(",")).collect(Collectors.toList());
+        System.out.println("collect: "+ listItem);
+        System.out.println("before evaluateDiscountedItems: items detail: "+ items);
+        calculateGroupDiscount(listItem, discountPrice);
     }
 
     public void evaluateFreeItems(String promotionItem, String freeItem) {
@@ -108,7 +130,7 @@ public class CheckoutSolution {
             if (purchasedCount == itemPromoCount) return;
             if(items.containsKey(itemPromoCode)){
                 int totalCnt = itemPromoCount + freeItemCount;
-                items.put(itemPromoCode, (purchasedCount - (purchasedCount/totalCnt)));
+                items.put(itemPromoCode, (long) (purchasedCount - purchasedCount/totalCnt));
             }
         }
     }
@@ -116,14 +138,14 @@ public class CheckoutSolution {
     public int getSpecialPrices(String product, int totalPurchased) {
         int i = totalPurchased;
         if (i >= 1) {
-            int specialPrice = itemSpecialPrices.getOrDefault(i + "-" + product, 0);
+            int specialPrice = itemSpecialPrices.containsKey(i + "-" + product) ? itemSpecialPrices.get(i + "-" + product) : 0;
             if (specialPrice > 0) {
                 int availableItems = Math.toIntExact(items.get(product));
                 int totalGroupCount = availableItems / i;
                 splSum += totalGroupCount * specialPrice;
 
                 int balanceItemsCount = Math.toIntExact(availableItems % i);
-                items.put(product, (long) balanceItemsCount);
+                items.put(product, Long.valueOf(balanceItemsCount));
                 if (balanceItemsCount > 1) {
                     i = balanceItemsCount;
                 } else {
@@ -142,28 +164,33 @@ public class CheckoutSolution {
         if(isInValidItemsExists(skus)) return -1;
 
         items = getItems(skus);
-        int sum = 0;
+        long sum = 0;
 
-        // #1: Group Discount offer Calculation
+        // Order-1: Discount offer
         for(Map.Entry<String, Integer> entry : itemGroupDiscountList.entrySet()) {
             evaluateDiscountedItems(entry.getKey(), entry.getValue());
         }
-        // #2 : Calculate Free items
+        System.out.println("Items After Discount Calc:"+ items);
+        // Order-2 : Invoke Free itesm
         for(Map.Entry<String, String> entry : itemsFreeList.entrySet()) {
             evaluateFreeItems(entry.getKey(), entry.getValue());
         }
-        // #3 : Invoke the special prices
+        // Invoke the special prices
         for(Map.Entry<String, Long> entry : items.entrySet()) {
             sum += getSpecialPrices(entry.getKey(), Math.toIntExact(entry.getValue()));
             splSum = 0;
         }
-        // #4 : Invoke the regular prices
+
+        // Invoke the regular prices
         for(Map.Entry<String, Long> entry : items.entrySet()) {
             Integer itemRegularPrice = itemRegularPrices.get(entry.getKey());
             if (itemRegularPrice != null) {
                 sum += entry.getValue() * itemRegularPrice.intValue();
             }
         }
-        return (sum > 0)? sum : -1;
+        int sumValue = (sum > 0)? Long.valueOf(sum).intValue() : -1;
+        return sumValue;
     }
+
 }
+
