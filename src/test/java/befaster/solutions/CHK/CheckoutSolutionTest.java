@@ -106,7 +106,7 @@ public class CheckoutSolutionTest {
     public void groupDiscountScenario1(){assertThat(checkoutSolution.checkout("MMMNNNSTX"), equalTo(195));}
 
     @Test
-    public void groupDiscountScenario2(){assertThat(checkoutSolution.checkout("MMMNNNSTXSTX"), equalTo(252));}
+    public void groupDiscountScenario2(){assertThat(checkoutSolution.checkout("MMMNNNSTXSTX"), equalTo(240));}
 
     @Test
     public void groupDiscountScenario3(){assertThat(checkoutSolution.checkout("MMMNNNSTXAAA"), equalTo(325));}
@@ -115,9 +115,16 @@ public class CheckoutSolutionTest {
     public void groupDiscountScenario4(){assertThat(checkoutSolution.checkout("STXYXZSTXAAAEEB"), equalTo(345));}
 
     @Test
-    public void groupDiscountScenario5(){assertThat(checkoutSolution.checkout("S"), equalTo(345));}
+    public void groupDiscountScenario5(){assertThat(checkoutSolution.checkout("S"), equalTo(20));}
+
+    @Test
+    public void groupDiscountScenario6(){assertThat(checkoutSolution.checkout("STXXYZ"), equalTo(90));}
+
+    @Test
+    public void groupDiscountScenario7(){assertThat(checkoutSolution.checkout("STXYZT"), equalTo(90));}
 
 }
+
 
 
 
