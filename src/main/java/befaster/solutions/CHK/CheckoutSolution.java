@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 
 public class CheckoutSolution {
-
     static Map<String, Integer> itemRegularPrices = new HashMap<>();
     static Map<String, Integer> itemSpecialPrices = new HashMap<>();
     static Map<String, String> itemsFreeList = new HashMap<>();
@@ -121,18 +120,20 @@ public class CheckoutSolution {
 
         List<String> selectedItem = new ArrayList<>();
         for (String sItem : groupListItem) {
-            if (items.containsKey(sItem) && items.get(sItem) > 0) {
-                int itemCnt = Math.toIntExact(items.get(sItem));
+            if(!items.containsKey(sItem)) continue;;
+            int itemCnt = Math.toIntExact(items.get(sItem));
+            if(itemCnt > 0)
                 selectedItem.add(sItem);
-                if(itemCnt >= 3 && groupCount == 0){
+
+            if(itemCnt >= 3){
+                updateList(selectedItem, discountPrice);
+                break;
+            } else if(itemCnt < 3) {
+                groupCount += itemCnt;
+                if(groupCount > 3) groupCount = 3;
+                if (groupCount == 3) {
                     updateList(selectedItem, discountPrice);
                     break;
-                } else {
-                    groupCount++;
-                    if (groupCount == 3 || (groupCount > 1 && items.get(sItem) >= 2)) {
-                        updateList(selectedItem, discountPrice);
-                        break;
-                    }
                 }
             }
         }
@@ -200,20 +201,21 @@ public class CheckoutSolution {
         items = getItems(skus);
         long sum = 0;
 
-        // Logic-1: Invoke the Discount offer
+        // Logic-1: Discount offer calculation
         for(Map.Entry<String, Integer> entry : itemGroupDiscountList.entrySet()) {
             evaluateDiscountedItems(entry.getKey(), entry.getValue());
         }
-        // Logic-2 : Invoke Free items
+        // Logic-2 : Invoke Free items calculation
         for(Map.Entry<String, String> entry : itemsFreeList.entrySet()) {
             evaluateFreeItems(entry.getKey(), entry.getValue());
         }
-        // Logic-3 : Invoke the special prices
+        // Logic-3 : Invoke the special prices calculation
         for(Map.Entry<String, Long> entry : items.entrySet()) {
             sum += getSpecialPrices(entry.getKey(), Math.toIntExact(entry.getValue()));
             splSum = 0;
         }
-        // Logic-4 : Invoke the regular prices
+
+        // Logic-4 : Invoke the regular prices calculation
         for(Map.Entry<String, Long> entry : items.entrySet()) {
             Integer itemRegularPrice = itemRegularPrices.get(entry.getKey());
             if (itemRegularPrice != null) {
@@ -224,3 +226,4 @@ public class CheckoutSolution {
         return sumValue;
     }
 }
+
