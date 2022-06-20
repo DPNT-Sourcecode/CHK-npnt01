@@ -1,18 +1,16 @@
 package befaster.solutions.CHK;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 
 public class CheckoutSolution {
+
     static Map<String, Integer> itemRegularPrices = new HashMap<>();
     static Map<String, Integer> itemSpecialPrices = new HashMap<>();
     static Map<String, String> itemsFreeList = new HashMap<>();
-    static Map<String, Integer> itemGroupDiscountList = new HashMap<>();
+    static Map<String, Integer> itemGroupDiscountList = new LinkedHashMap<>();
 
     static int splSum;
     static Map<String, Long> items = null;
@@ -63,7 +61,7 @@ public class CheckoutSolution {
         itemsFreeList.put("3-R", "1-Q");
         itemsFreeList.put("3-U", "1-U");
 
-        itemGroupDiscountList.put("S,T,X,Y,Z", 45);
+        itemGroupDiscountList.put("Z,Y,S,T,X", 45);
     }
 
     public boolean isInValidItemsExists(String skus) {
@@ -77,30 +75,64 @@ public class CheckoutSolution {
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
-    public boolean isValidGroupExists(List<String> groupListItem){
-        int groupCount = Math.toIntExact(groupListItem.stream().map(a -> items.containsKey(a) && items.get(a) > 0).count());
-        return (groupCount >= 3);
+    public int validateInput(String itemCode){
+        try {
+            return Math.toIntExact(items.get(itemCode));
+        } catch (Exception ex) {
+            return 0;
+        }
     }
 
-    public void updateList(List<String> selectedItem, int discountPrice){
-        for(String sItem: selectedItem) {
-            long existingCount = items.get(sItem);
-            items.put(sItem, existingCount - 1);
+    public int getGroupCount(List<String> groupListItem){
+        int sum = groupListItem.stream().mapToInt(a -> validateInput(a)).sum();
+        return sum/3;
+    }
+
+    public void updateList(List<String> selectedItem, int discountPrice) {
+        int totalGroup = 1;
+        if (selectedItem.size() == 3) {
+            for (String sItem : selectedItem) {
+                long existingCount = items.get(sItem);
+                items.put(sItem, existingCount - 1);
+            }
+        } else if (selectedItem.size() == 2) {
+            int groupCount = 3;
+            String firstItemCode = selectedItem.get(0);
+            int firstItemCount = Math.toIntExact(items.get(firstItemCode));
+            groupCount = groupCount - firstItemCount;
+            if (groupCount > 0) items.put(firstItemCode, 0L);
+
+            String secondItemCode = selectedItem.get(1);
+            int secondItemCount = Math.toIntExact(items.get(secondItemCode));
+            items.put(secondItemCode, (long) (secondItemCount - groupCount));
+        } else {
+            String sItem = selectedItem.get(0);
+            int itemCount = Math.toIntExact(items.get(sItem));
+            int cnt = itemCount / 3;
+            long balanceItem = (itemCount % 3);
+            items.put(sItem, balanceItem);
+            totalGroup = cnt;
         }
-        splSum += discountPrice;
+        splSum += totalGroup * discountPrice;
     }
 
     public void calculateGroupDiscount(List<String> groupListItem, int discountPrice) {
         int groupCount = 0;
+
         List<String> selectedItem = new ArrayList<>();
-        if(!isValidGroupExists(groupListItem)) return;
         for (String sItem : groupListItem) {
             if (items.containsKey(sItem) && items.get(sItem) > 0) {
+                int itemCnt = Math.toIntExact(items.get(sItem));
                 selectedItem.add(sItem);
-                groupCount++;
-                if (groupCount == 3) {
+                if(itemCnt >= 3 && groupCount == 0){
                     updateList(selectedItem, discountPrice);
-                    calculateGroupDiscount(groupListItem, discountPrice);
+                    break;
+                } else {
+                    groupCount++;
+                    if (groupCount == 3 || (groupCount > 1 && items.get(sItem) >= 2)) {
+                        updateList(selectedItem, discountPrice);
+                        break;
+                    }
                 }
             }
         }
@@ -108,7 +140,12 @@ public class CheckoutSolution {
 
     public void evaluateDiscountedItems(String discountedItem, Integer discountPrice) {
         List<String> listItem = stream(discountedItem.split(",")).collect(Collectors.toList());
-        calculateGroupDiscount(listItem, discountPrice);
+        int totalGroup = 0;
+        int totalPossibleGroup = getGroupCount(listItem);
+        while(totalPossibleGroup > totalGroup){
+            calculateGroupDiscount(listItem, discountPrice);
+            totalGroup++;
+        }
     }
 
     public void evaluateFreeItems(String promotionItem, String freeItem) {
@@ -163,12 +200,11 @@ public class CheckoutSolution {
         items = getItems(skus);
         long sum = 0;
 
-        // Logic-1: Discount offer calculation
+        // Logic-1: Invoke the Discount offer
         for(Map.Entry<String, Integer> entry : itemGroupDiscountList.entrySet()) {
             evaluateDiscountedItems(entry.getKey(), entry.getValue());
         }
-        System.out.println("Items After Discount Calc:"+ items);
-        // Logic-2 : Invoke Free items list
+        // Logic-2 : Invoke Free items
         for(Map.Entry<String, String> entry : itemsFreeList.entrySet()) {
             evaluateFreeItems(entry.getKey(), entry.getValue());
         }
@@ -187,5 +223,5 @@ public class CheckoutSolution {
         int sumValue = (sum > 0)? Long.valueOf(sum).intValue() : -1;
         return sumValue;
     }
-
 }
+
