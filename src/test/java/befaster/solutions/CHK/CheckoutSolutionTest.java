@@ -132,8 +132,16 @@ public class CheckoutSolutionTest {
     @Test
     public void groupDiscountScenario10(){assertThat(checkoutSolution.checkout("ZZZ"), equalTo(45));}
 
-    "HHHHHHHHHH"
+    @Test
+    public void groupDiscountScenario11(){assertThat(checkoutSolution.checkout("HHHHHHHHHH"), equalTo(80));}
+
+
+    @Test
+    public void groupDiscountScenario12(){assertThat(checkoutSolution.checkout("HHHHHHH"), equalTo(65));}
+
+
 }
+
 
 
 
