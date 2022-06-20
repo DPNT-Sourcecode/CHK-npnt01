@@ -226,4 +226,3 @@ public class CheckoutSolution {
         return sumValue;
     }
 }
-
